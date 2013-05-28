@@ -146,6 +146,9 @@ input {
         asset.appendChild(anchor);
 
         var size = document.createElement('div');
+        // wait a little bit longer if image is not loaded yet
+        if (this.width === 0)
+            setTimeout(function(){}, 200);
         size.innerHTML = this.width +'x'+ this.height;
         size.classList.add('size');
         asset.appendChild(size);
