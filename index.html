@@ -197,12 +197,6 @@ input {
                     searchInput.focus();
                 }
             });
-
-            // Click on title triggers search with an empty string
-            document.querySelector('.title').addEventListener('click', function() {
-                searchInput.value = '';
-                displayAssets();
-            });
         }
         xhr.send(null);
     }
