@@ -1,0 +1,213 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Chromium Assets</title>
+    <link href="//fonts.googleapis.com/css?family=Monda" rel="stylesheet" type="text/css">
+    <style>
+
+body {
+    margin: 0 auto;
+    font-family: 'Monda', sans-serif;
+    background-color: #eee;
+}
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #888;
+    line-height: 3em;
+    background-color: #fff;
+    margin-left: auto;
+    margin-right: auto;
+}
+.title {
+    color: #555;
+    padding-right: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+input {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    color: #555;
+    padding-left: 8px;
+    outline: none;
+    height: 2.1em;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-shadow: inset 0px -1px 0px #eee;
+}
+.assets {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+.asset {
+    width: 128px;
+    height: 128px;
+    box-shadow: 0 1px 4px grey;
+    float: left;
+    background: -webkit-radial-gradient(0 75%, ellipse cover, rgba(255,255,255,1) 70%,rgba(255,255,255,0) 100%);
+    border-radius: 8px;
+    padding: 8px;
+    margin: 8px;
+    display: -webkit-box;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+}
+
+.asset img {
+    max-width: 128px;
+    max-height: 128px;
+}
+.footer {
+    clear: left;
+    height: 30px;
+}
+.loading {
+    width: 22px;
+    height: 22px;
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    opacity: .7;
+    -webkit-transition: opacity .5s;
+}
+.hidden {
+    opacity: 0
+}
+    </style>
+  </head>
+<body>
+
+<div class="header">
+    <span class="title">Chromium Assets</span>
+    <datalist id="searchExamples">
+        <option value="profile">
+        <option value="cros">
+        <option value="avatar">
+        <option value="bluetooth">
+    </datalist>
+    <input type="search" placeholder="search..." list="searchExamples">
+</div>
+<div class="assets"></div>
+
+<img class="loading" src="static/spinner.svg">
+<div class="footer"></div>
+
+<script>
+    var assets = {};
+    var numberAssets, numberResults;
+
+    var searchInput = document.querySelector('input');
+    var assetsDiv = document.querySelector('.assets');
+    var loadingImage = document.querySelector('.loading');
+
+    function removeEventListeners(image) {
+        image.removeEventListener('load', onImageLoaded);
+        image.removeEventListener('error', onImageError);
+    }
+
+    function updateLoadingImage() {
+        if (numberAssets === numberResults) {
+            loadingImage.classList.add('hidden');
+        } else {
+            loadingImage.classList.remove('hidden');
+        }
+    }
+
+    function onImageError() {
+        if (this.src.indexOf('default_100_percent') === -1) {
+            // fallback to lower resolution
+            this.src = this.src.replace('default_200_percent', 'default_100_percent');
+        } else {
+            numberResults--;
+            updateLoadingImage();
+
+            removeEventListeners(this);
+        }
+    }
+
+    function onImageLoaded() {
+        var asset = document.createElement('div');
+        asset.classList.add('asset');
+
+        var anchor = document.createElement('a');
+        anchor.href = this.src;
+        anchor.target = "_blank";
+        anchor.rel = "nofollow";
+
+        anchor.appendChild(this);
+        asset.appendChild(anchor);
+        assetsDiv.appendChild(asset);
+
+        numberAssets++;
+        updateLoadingImage();
+
+        removeEventListeners(this);
+    }
+
+    function displayAssets() {
+        var filter = searchInput.value;
+        var regExp = new RegExp(filter, 'i');
+
+        window.location.hash = filter;
+
+        numberAssets = 0;
+        numberResults = 0;
+
+        assetsDiv.innerHTML = '';
+        updateLoadingImage();
+
+        for (var i=0; i<assets.length; i++) {
+            var url = assets[i][0]
+            if (filter !== searchInput.value) break; 
+            if (!filter || regExp.test(url.substr(baseUrl.length))) {
+                var image = new Image();
+                image.title = assets[i][1];
+                image.addEventListener('load', onImageLoaded);
+                image.addEventListener('error', onImageError);
+                image.src = url;
+                numberResults++;
+            }
+        }
+    }
+
+    var timeout;
+
+    onload = function() {
+        searchInput.value = window.location.hash.substr(1);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/json');
+        xhr.onload = function() {
+            assets = JSON.parse(xhr.response);
+            displayAssets();
+
+            // Search is triggered each time user enters a new character
+            searchInput.addEventListener('input', function() {
+                window.stop();
+                clearTimeout(timeout);
+                timeout = setTimeout(displayAssets, 300);
+            });
+
+            // Pressing / focus the search
+            document.addEventListener('keyup', function(e) {
+                if (e.keyCode === 191 && document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+
+            // Click on title triggers search with an empty string
+            document.querySelector('.title').addEventListener('click', function() {
+                searchInput.value = '';
+                displayAssets();
+            });
+        }
+        xhr.send(null);
+    }
+
+    var baseUrl = 'https://src.chromium.org/svn/trunk/src/';
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+cron:
+-  url: /tasks/get-chromium-assets
+   schedule: every 12 hours
