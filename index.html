@@ -53,12 +53,18 @@ input {
     display: -webkit-box;
     -webkit-box-pack: center;
     -webkit-box-align: center;
+    -webkit-box-orient: vertical;
 }
 
 .asset img {
-    max-width: 128px;
-    max-height: 128px;
+    max-width: 118px;
+    max-height: 118px;
 }
+.size {
+    font-size: 70%;
+    color: grey;
+}
+
 .footer {
     clear: left;
     height: 30px;
@@ -135,9 +141,14 @@ input {
         anchor.href = this.src;
         anchor.target = "_blank";
         anchor.rel = "nofollow";
-
         anchor.appendChild(this);
         asset.appendChild(anchor);
+
+        var size = document.createElement('div');
+        size.innerHTML = this.width +'x'+ this.height;
+        size.classList.add('size');
+        asset.appendChild(size);
+
         assetsDiv.appendChild(asset);
 
         numberAssets++;
