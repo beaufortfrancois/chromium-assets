@@ -37,6 +37,12 @@ input {
     font-size: 16px;
     box-shadow: inset 0px -1px 0px #eee;
 }
+#displayHiDPI {
+    vertical-align: middle;
+}
+label {
+    font-size: 80%;
+}
 .assets {
     max-width: 1120px;
     margin: 0 auto;
@@ -95,6 +101,8 @@ input {
         <option value="bluetooth">
     </datalist>
     <input type="search" placeholder="search..." list="searchExamples">
+    <input name="displayHiDPI" id="displayHiDPI" type="checkbox" checked>
+    <label for="displayHiDPI">HiDPI</label>
 </div>
 <div class="assets"></div>
 
@@ -108,6 +116,7 @@ input {
     var searchInput = document.querySelector('input');
     var assetsDiv = document.querySelector('.assets');
     var loadingImage = document.querySelector('.loading');
+    var displayHiDPICheckbox = document.querySelector('#displayHiDPI');
 
     function removeEventListeners(image) {
         image.removeEventListener('load', onImageLoaded);
@@ -162,6 +171,8 @@ input {
         var filter = searchInput.value;
         var regExp = new RegExp(filter, 'i');
 
+        var displayHiDPI = displayHiDPICheckbox.checked;
+
         window.location.hash = filter;
 
         numberAssets = 0;
@@ -178,6 +189,7 @@ input {
                 image.title = assets[i][1];
                 image.addEventListener('load', onImageLoaded);
                 image.addEventListener('error', onImageError);
+                if (!displayHiDPI)  url = url.replace('default_200_percent', 'default_100_percent');
                 image.src = url;
                 numberResults++;
             }
@@ -185,6 +197,12 @@ input {
     }
 
     var timeout;
+
+    function triggerSearch() {
+        window.stop();
+        clearTimeout(timeout);
+        timeout = setTimeout(displayAssets, 300);
+    }
 
     onload = function() {
         searchInput.value = window.location.hash.substr(1);
@@ -196,11 +214,10 @@ input {
             displayAssets();
 
             // Search is triggered each time user enters a new character
-            searchInput.addEventListener('input', function() {
-                window.stop();
-                clearTimeout(timeout);
-                timeout = setTimeout(displayAssets, 300);
-            });
+            searchInput.addEventListener('input', triggerSearch);
+
+            // Search is also triggered when user toggles HiDPI checkbox
+            displayHiDPICheckbox.addEventListener('change', triggerSearch);
 
             // Pressing / focus the search
             document.addEventListener('keyup', function(e) {
