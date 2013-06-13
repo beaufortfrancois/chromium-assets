@@ -155,7 +155,7 @@ label {
         asset.appendChild(anchor);
 
         var size = document.createElement('div');
-        size.innerHTML = this.width +'x'+ this.height;
+        size.innerText = this.width +'x'+ this.height;
         size.classList.add('size');
         asset.appendChild(size);
 
@@ -178,7 +178,7 @@ label {
         numberAssets = 0;
         numberResults = 0;
 
-        assetsDiv.innerHTML = '';
+        assetsDiv.innerText = '';
         updateLoadingImage();
 
         for (var i=0; i<assets.length; i++) {
