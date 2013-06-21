@@ -32,9 +32,16 @@ class GetChromiumAssetsTaskPage(webapp2.RequestHandler):
                 if resources_result.status_code == 200:
                     dom = parseString(resources_result.content)
 
-                    for structure in dom.getElementsByTagName('structure'):
-                        url = folder_path+'/default_200_percent/'+structure.getAttribute('file')
-                        title = structure.getAttribute('name')
+                    for item in dom.getElementsByTagName('structure'):
+                        url = folder_path+'/default_200_percent/'+item.getAttribute('file')
+                        title = item.getAttribute('name')
+                        # Retrieve only png not specific to Google Chrome
+                        if url.endswith('.png') and url.find('google_chrome') == -1:
+                            assets.append((url, title))
+
+                    for item in dom.getElementsByTagName('include'):
+                        url = folder_path+'/'+item.getAttribute('file')
+                        title = item.getAttribute('name')
                         # Retrieve only png not specific to Google Chrome
                         if url.endswith('.png') and url.find('google_chrome') == -1:
                             assets.append((url, title))
