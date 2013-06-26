@@ -10,7 +10,13 @@ body {
     margin: 0 auto;
     font-family: 'Monda', sans-serif;
     background-color: #eee;
+    -webkit-transition: background-color .3s;
 }
+
+.darkroom {
+    background-color: #333;
+}
+
 .header {
     text-align: center;
     margin-bottom: 30px;
@@ -37,8 +43,9 @@ input {
     font-size: 16px;
     box-shadow: inset 0px -1px 0px #eee;
 }
-#displayHiDPI {
+input[type=checkbox] {
     vertical-align: middle;
+    margin-left: 8px;
 }
 label {
     font-size: 80%;
@@ -60,6 +67,11 @@ label {
     -webkit-box-pack: center;
     -webkit-box-align: center;
     -webkit-box-orient: vertical;
+}
+
+.darkroom .asset {
+    background: transparent;
+    box-shadow: none;
 }
 
 .asset img {
@@ -103,6 +115,8 @@ label {
     <input type="search" placeholder="search..." list="searchExamples">
     <input name="displayHiDPI" id="displayHiDPI" type="checkbox" checked>
     <label for="displayHiDPI">HiDPI</label>
+    <input name="toggleBackground" id="toggleBackground" type="checkbox">
+    <label for="toggleBackground">Darkroom</label>
 </div>
 <div class="assets"></div>
 
@@ -225,6 +239,11 @@ label {
                     e.preventDefault();
                     searchInput.focus();
                 }
+            });
+
+            // Toggle Darkroom Mode
+            document.querySelector('#toggleBackground').addEventListener('change', function() {
+                document.body.classList.toggle('darkroom');
             });
         }
         xhr.send(null);
