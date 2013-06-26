@@ -26,14 +26,16 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+.darkroom .header {
+    background-color: #222;
+}
 .title {
     color: #555;
     padding-right: 10px;
     font-weight: bold;
     cursor: pointer;
 }
-input {
-    border: 1px solid #ccc;
+input[type=search] {
     border-radius: 2px;
     color: #555;
     padding-left: 8px;
@@ -42,6 +44,12 @@ input {
     border: 1px solid #ccc;
     font-size: 16px;
     box-shadow: inset 0px -1px 0px #eee;
+}
+.darkroom input[type=search] {
+    border: 1px solid #666;
+    background-color: #333;
+    box-shadow: inset 0px -1px 0px #999;
+    color: #ccc;
 }
 input[type=checkbox] {
     vertical-align: middle;
