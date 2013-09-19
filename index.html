@@ -91,6 +91,19 @@ label {
     margin-top: 6px;
     color: #999;
 }
+audio {
+    width: 88px;
+}
+audio::-webkit-media-controls-timeline,
+audio::-webkit-media-controls-volume-slider,
+audio::-webkit-media-controls-mute-button {
+    display: none;
+}
+.name {
+    font-size: 70%;
+    margin-top: 6px;
+    color: #999;
+}
 
 .footer {
     clear: left;
@@ -140,9 +153,13 @@ label {
     var loadingImage = document.querySelector('.loading');
     var displayHiDPICheckbox = document.querySelector('#displayHiDPI');
 
-    function removeEventListeners(image) {
+    function removeImageEventListeners(image) {
         image.removeEventListener('load', onImageLoaded);
         image.removeEventListener('error', onImageError);
+    }
+
+    function removeAudioEventListeners(audio) {
+        audio.removeEventListener('load', onAudioLoaded);
     }
 
     function updateLoadingImage() {
@@ -161,8 +178,32 @@ label {
             numberResults--;
             updateLoadingImage();
 
-            removeEventListeners(this);
+            removeImageEventListeners(this);
         }
+    }
+
+    function onAudioLoaded() {
+        var asset = document.createElement('div');
+        asset.classList.add('asset');
+
+        var anchor = document.createElement('a');
+        anchor.href = this.src;
+        anchor.target = "_blank";
+        anchor.rel = "nofollow";
+        anchor.appendChild(this);
+        asset.appendChild(anchor);
+
+        var name = document.createElement('div');
+        name.innerText = this.dataset.name;
+        name.classList.add('name');
+        asset.appendChild(name);
+
+        assetsDiv.appendChild(asset);
+
+        numberAssets++;
+        updateLoadingImage();
+
+        removeAudioEventListeners(this);
     }
 
     function onImageLoaded() {
@@ -186,7 +227,7 @@ label {
         numberAssets++;
         updateLoadingImage();
 
-        removeEventListeners(this);
+        removeImageEventListeners(this);
     }
 
     function displayAssets() {
@@ -204,15 +245,24 @@ label {
         updateLoadingImage();
 
         for (var i=0; i<assets.length; i++) {
-            var url = assets[i][0]
+            var url = assets[i][0].replace(/\\/g, '/');
             if (filter !== searchInput.value) break; 
             if (!filter || regExp.test(url.substr(baseUrl.length))) {
-                var image = new Image();
-                image.title = assets[i][1];
-                image.addEventListener('load', onImageLoaded);
-                image.addEventListener('error', onImageError);
-                if (!displayHiDPI)  url = url.replace('default_200_percent', 'default_100_percent');
-                image.src = url;
+                if (url.indexOf('.wav', url.length - '.wav'.length) !== -1) {
+                    var audio = document.createElement('audio');
+                    audio.title = assets[i][1];
+                    audio.dataset.name = url.substr(url.lastIndexOf('/')+1, url.length);
+                    audio.controls = true;
+                    audio.addEventListener('canplay', onAudioLoaded);
+                    audio.src = url;
+                } else {
+                    var image = new Image();
+                    image.title = assets[i][1];
+                    image.addEventListener('load', onImageLoaded);
+                    image.addEventListener('error', onImageError);
+                    if (!displayHiDPI)  url = url.replace('default_200_percent', 'default_100_percent');
+                    image.src = url;
+                }
                 numberResults++;
             }
         }

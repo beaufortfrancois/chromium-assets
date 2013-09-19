@@ -12,6 +12,15 @@ RESOURCES_URL = 'https://code.google.com/p/cs/codesearch/codesearch/json?search_
 RESOURCE_BASE_URL = 'https://src.chromium.org/svn/trunk/'
 
 
+def is_valid_asset(url):
+
+    # Retrieve only image and audio files which are not specific to Google Chrome
+    return (url.find('google_chrome') == -1) and \
+        (url.endswith('.png') or url.endswith('.jpg') \
+        or url.endswith('.ico') or url.endswith('.bmp') \
+        or url.endswith('.gif') or url.endswith('.wav'))
+
+
 class GetChromiumAssetsTaskPage(webapp2.RequestHandler):
 
     def get(self):
@@ -35,16 +44,18 @@ class GetChromiumAssetsTaskPage(webapp2.RequestHandler):
                     for item in dom.getElementsByTagName('structure'):
                         url = folder_path+'/default_200_percent/'+item.getAttribute('file')
                         title = item.getAttribute('name')
-                        # Retrieve only png not specific to Google Chrome
-                        if url.endswith('.png') and url.find('google_chrome') == -1:
+                        if is_valid_asset(url):
                             assets.append((url, title))
+                        elif not url.endswith('html') and not url.endswith('js') and not url.endswith('css') and not url.endswith('json') and url.find('google_chrome') == -1:
+                            print url
 
                     for item in dom.getElementsByTagName('include'):
                         url = folder_path+'/'+item.getAttribute('file')
                         title = item.getAttribute('name')
-                        # Retrieve only png not specific to Google Chrome
-                        if url.endswith('.png') and url.find('google_chrome') == -1:
+                        if is_valid_asset(url):
                             assets.append((url, title))
+                        elif not url.endswith('html') and not url.endswith('js') and not url.endswith('css') and not url.endswith('json') and url.find('google_chrome') == -1:
+                            print url
 
             Assets.update_assets(assets)
 
