@@ -46,16 +46,12 @@ class GetChromiumAssetsTaskPage(webapp2.RequestHandler):
                         title = item.getAttribute('name')
                         if is_valid_asset(url):
                             assets.append((url, title))
-                        elif not url.endswith('html') and not url.endswith('js') and not url.endswith('css') and not url.endswith('json') and url.find('google_chrome') == -1:
-                            print url
 
                     for item in dom.getElementsByTagName('include'):
                         url = folder_path+'/'+item.getAttribute('file')
                         title = item.getAttribute('name')
                         if is_valid_asset(url):
                             assets.append((url, title))
-                        elif not url.endswith('html') and not url.endswith('js') and not url.endswith('css') and not url.endswith('json') and url.find('google_chrome') == -1:
-                            print url
 
             Assets.update_assets(assets)
 
