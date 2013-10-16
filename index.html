@@ -277,7 +277,7 @@ audio::-webkit-media-controls-mute-button {
     }
 
     onload = function() {
-        searchInput.value = window.location.hash.substr(1);
+        searchInput.value = decodeURI(window.location.hash.substr(1));
 
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/json');
