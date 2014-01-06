@@ -150,7 +150,7 @@ audio::-webkit-media-controls-mute-button {
 
 <script>
     var assets = {};
-    var numberAssets, numberResults;
+    var numberAssets, numberResults, results;
 
     var searchInput = document.querySelector('input');
     var assetsDiv = document.querySelector('.assets');
@@ -255,13 +255,15 @@ audio::-webkit-media-controls-mute-button {
 
         numberAssets = 0;
         numberResults = 0;
+        results = [];
 
         assetsDiv.innerText = '';
         updateLoadingImage();
 
-        for (var i=0; i<assets.length; i++) {
+        for (var i = 0; i < assets.length; i++) {
             var url = assets[i][0].replace(/\\/g, '/');
             if (filter !== searchInput.value) break; 
+            if (results.indexOf(url) !== -1) continue;
             if (!filter || regExp.test(url.substr(baseUrl.length))) {
                 if (url.indexOf('.wav', url.length - '.wav'.length) !== -1) {
                     var audio = document.createElement('audio');
@@ -270,6 +272,8 @@ audio::-webkit-media-controls-mute-button {
                     audio.controls = true;
                     audio.addEventListener('canplay', onAudioLoaded);
                     audio.src = url;
+                    results.push(url);
+                    numberResults++;
                 } else {
                     var image = new Image();
                     image.title = assets[i][1];
@@ -277,8 +281,9 @@ audio::-webkit-media-controls-mute-button {
                     image.addEventListener('error', onImageError);
                     if (!displayHiDPI)  url = url.replace('default_200_percent', 'default_100_percent');
                     image.src = url;
+                    results.push(url);
+                    numberResults++;
                 }
-                numberResults++;
             }
         }
     }
