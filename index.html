@@ -210,7 +210,18 @@ audio::-webkit-media-controls-mute-button {
         removeAudioEventListeners(this);
     }
 
-    function onImageLoaded() {
+    function onImageLoaded(event, numTries) {
+        // We only want to display fully loaded images.
+        var numTries = numTries || 1;
+        if (this.width === 0 && this.height === 0) {
+          if (numTries < 3) {
+            setTimeout(onImageLoaded.bind(this, event, ++numTries), 1000, this);
+          } else {
+            onImageError.bind(this)();
+          }
+          return false;
+        }
+
         var asset = document.createElement('div');
         asset.classList.add('asset');
 
