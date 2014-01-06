@@ -75,6 +75,16 @@ label {
     -webkit-box-pack: center;
     -webkit-box-align: center;
     -webkit-box-orient: vertical;
+    overflow: overlay;
+}
+
+.asset::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+}
+
+.asset::-webkit-scrollbar-thumb {
+    background-color: #999;
 }
 
 .darkroom .asset {
@@ -85,6 +95,10 @@ label {
 .asset img {
     max-width: 118px;
     max-height: 118px;
+}
+.asset img:hover {
+    max-height: none;
+    max-width: none;
 }
 .size {
     font-size: 70%;
