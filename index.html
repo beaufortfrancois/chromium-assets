@@ -177,7 +177,7 @@ audio::-webkit-media-controls-mute-button {
     }
 
     function removeAudioEventListeners(audio) {
-        audio.removeEventListener('load', onAudioLoaded);
+        audio.removeEventListener('canplay', onAudioLoaded);
     }
 
     function updateLoadingImage() {
