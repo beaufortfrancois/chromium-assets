@@ -226,11 +226,7 @@ audio::-webkit-media-controls-mute-button {
         name.classList.add('name');
         asset.appendChild(name);
 
-        assetsDiv.appendChild(asset);
-
-        numberAssets++;
-        updateLoadingImage();
-
+        insertAsset(asset, this.title);
         removeAudioEventListeners(this);
     }
 
@@ -261,12 +257,25 @@ audio::-webkit-media-controls-mute-button {
         size.classList.add('size');
         asset.appendChild(size);
 
-        assetsDiv.appendChild(asset);
+        insertAsset(asset, this.title);
+        removeImageEventListeners(this);
+    }
+
+    function insertAsset(asset, title) {
+        var insertedAssets = document.querySelectorAll('.asset');
+        var inserted = false;
+        for (var i = 0; i < insertedAssets.length; i++) {
+            if (title < insertedAssets[i].querySelector('[title]').title) {
+                assetsDiv.insertBefore(asset, insertedAssets[i]);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted)
+            assetsDiv.appendChild(asset);
 
         numberAssets++;
         updateLoadingImage();
-
-        removeImageEventListeners(this);
     }
 
     function displayAssets() {
@@ -327,6 +336,13 @@ audio::-webkit-media-controls-mute-button {
         xhr.open('GET', '/json');
         xhr.onload = function() {
             assets = JSON.parse(xhr.response);
+            assets.sort(function(a, b) {
+                if (a[1] < b[1]) return -1;
+                if (a[1] > b[1]) return 1;
+                if (a[0] < b[0]) return -1;
+                if (a[0] > b[0]) return 1;
+                return 0;
+            });
             displayAssets();
 
             // Search is triggered each time user enters a new character
