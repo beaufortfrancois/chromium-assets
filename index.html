@@ -164,6 +164,7 @@ audio::-webkit-media-controls-mute-button {
 
 <script>
     var assets = {};
+    var notFoundUrls = [];
     var numberAssets, numberResults, results;
 
     var searchInput = document.querySelector('input');
@@ -189,10 +190,18 @@ audio::-webkit-media-controls-mute-button {
     }
 
     function onImageError() {
+        notFoundUrls.push(this.src);
+
         if ((this.src.indexOf('default_100_percent') === -1)  &&
             (this.src.indexOf('default_200_percent') !== -1)) {
             // fallback to lower resolution
-            this.src = this.src.replace('default_200_percent', 'default_100_percent');
+            var newUrl = this.src.replace('default_200_percent', 'default_100_percent');
+            for (var i = 0; i < assets.length; i++) {
+                var url = assets[i][0].replace(/\\/g, '/');
+                if (url === this.src)
+                    assets[i][0] = newUrl;
+            }
+            this.src = newUrl;
         } else {
             numberResults--;
             updateLoadingImage();
@@ -277,8 +286,11 @@ audio::-webkit-media-controls-mute-button {
 
         for (var i = 0; i < assets.length; i++) {
             var url = assets[i][0].replace(/\\/g, '/');
+            if (!displayHiDPI)  url = url.replace('default_200_percent', 'default_100_percent');
+
             if (filter !== searchInput.value) break; 
             if (results.indexOf(url) !== -1) continue;
+            if (notFoundUrls.indexOf(url) !== -1) continue;
             if (!filter || regExp.test(url.substr(baseUrl.length))) {
                 if (url.indexOf('.wav', url.length - '.wav'.length) !== -1) {
                     var audio = document.createElement('audio');
@@ -287,18 +299,15 @@ audio::-webkit-media-controls-mute-button {
                     audio.controls = true;
                     audio.addEventListener('canplay', onAudioLoaded);
                     audio.src = url;
-                    results.push(url);
-                    numberResults++;
                 } else {
                     var image = new Image();
                     image.title = assets[i][1];
                     image.addEventListener('load', onImageLoaded);
                     image.addEventListener('error', onImageError);
-                    if (!displayHiDPI)  url = url.replace('default_200_percent', 'default_100_percent');
                     image.src = url;
-                    results.push(url);
-                    numberResults++;
                 }
+                results.push(url);
+                numberResults++;
             }
         }
     }
