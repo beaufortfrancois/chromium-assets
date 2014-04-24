@@ -1,5 +1,6 @@
 import json
 from xml.dom.minidom import parseString
+from urlparse import urljoin
 
 from google.appengine.api import urlfetch
 
@@ -70,13 +71,14 @@ class GetChromiumAssetsTaskPage(webapp2.RequestHandler):
                 dom = parseString(resources_result.content)
 
                 for item in dom.getElementsByTagName('structure'):
-                    url = folder_path+'/default_200_percent/'+item.getAttribute('file')
+                    url = urljoin(folder_path+'/default_200_percent/',item.getAttribute('file'))
                     title = item.getAttribute('name')
                     if is_valid_asset(url):
                         assets.append((url, title))
 
                 for item in dom.getElementsByTagName('include'):
-                    url = folder_path+'/'+item.getAttribute('file')
+                    url = urljoin(folder_path+'/',item.getAttribute('file'))
+                    print url
                     title = item.getAttribute('name')
                     if is_valid_asset(url):
                         assets.append((url, title))
