@@ -1,3 +1,4 @@
+var baseUrl = 'https://src.chromium.org/svn/trunk/src/';
 var assets = {};
 var notFoundUrls = [];
 
@@ -203,4 +204,7 @@ onload = function() {
     xhr.send(null);
 }
 
-var baseUrl = 'https://src.chromium.org/svn/trunk/src/';
+window.addEventListener('popstate', function(e) {
+    searchInput.value = window.location.hash.substr(1);
+    triggerSearch();
+});
