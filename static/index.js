@@ -4,6 +4,7 @@ var notFoundUrls = [];
 var searchInput = document.querySelector('input');
 var assetsDiv = document.querySelector('.assets');
 var displayHiDPICheckbox = document.querySelector('#displayHiDPI');
+var darkRoomCheckbox = document.querySelector('#darkRoom');
 
 function onAudioLoaded() {
     this.removeEventListener('canplay', onAudioLoaded);
@@ -190,8 +191,13 @@ onload = function() {
         });
 
         // Toggle Darkroom Mode
-        document.querySelector('#toggleBackground').addEventListener('change', function() {
+        if (localStorage['darkRoom']) {
+            document.body.classList.add('darkroom');
+            darkRoomCheckbox.checked = true;
+        }
+        darkRoomCheckbox.addEventListener('change', function() {
             document.body.classList.toggle('darkroom');
+            localStorage['darkRoom'] = this.checked;
         });
     }
     xhr.send(null);
