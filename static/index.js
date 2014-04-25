@@ -158,7 +158,7 @@ function triggerSearch() {
     // And call safely window.stop().
     window.stop();
     clearTimeout(timeout);
-    displayAssets();
+    timeout = setTimeout(displayAssets, 300);
 }
 
 onload = function() {

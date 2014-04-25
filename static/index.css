@@ -97,9 +97,9 @@ audio::-webkit-media-controls-mute-button {
     box-shadow: none;
 }
 .darkroom input[type=search] {
-    border: 1px solid #666;
+    border: none;
     background-color: #333;
-    box-shadow: inset 0px -1px 0px #999;
+    box-shadow: none !important;
     color: #ccc;
 }
 .darkroom .asset {
