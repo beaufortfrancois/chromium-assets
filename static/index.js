@@ -89,7 +89,6 @@ function appendImage(url, title) {
     var image = new Image();
     image.title = title;
     image.addEventListener('load', onImageLoaded);
-    image.addEventListener('abort', function(e) { console.log(e) });
     image.addEventListener('error', onImageError);
     image.src = url;
 
@@ -192,7 +191,7 @@ onload = function() {
         });
 
         // Toggle Darkroom Mode
-        if (localStorage['darkRoom']) {
+        if (localStorage['darkRoom'] == 'true') {
             document.body.classList.add('darkroom');
             darkRoomCheckbox.checked = true;
         }
@@ -205,6 +204,9 @@ onload = function() {
 }
 
 window.addEventListener('popstate', function(e) {
-    searchInput.value = window.location.hash.substr(1);
-    triggerSearch();
+    var filter =  window.location.hash.substr(1);
+    if (filter !== searchInput.value) {
+      searchInput.value = filter;
+      triggerSearch();
+    }
 });
