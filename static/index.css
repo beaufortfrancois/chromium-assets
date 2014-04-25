@@ -93,7 +93,7 @@ audio::-webkit-media-controls-mute-button {
 }
 .darkroom .name,
 .darkroom .size {
-    background-color: rgba(255, 255, 255, .1);
+    background: none !important;
     box-shadow: none;
 }
 .darkroom input[type=search] {
