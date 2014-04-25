@@ -1,26 +1,13 @@
 var assets = {};
 var notFoundUrls = [];
-var numberAssets, results;
 
 var searchInput = document.querySelector('input');
 var assetsDiv = document.querySelector('.assets');
-var loadingImage = document.querySelector('.loading');
 var displayHiDPICheckbox = document.querySelector('#displayHiDPI');
 
-function removeImageEventListeners(image) {
-    image.removeEventListener('load', onImageLoaded);
-    image.removeEventListener('error', onImageError);
-}
-
-function removeAudioEventListeners(audio) {
-    audio.removeEventListener('canplay', onAudioLoaded);
-}
-
 function onAudioLoaded() {
-    removeImageEventListeners(this);
+    this.removeEventListener('canplay', onAudioLoaded);
     this.parentNode.parentNode.style.visibility = '';
-
-    numberAssets++;
 }
 
 function appendAudio(url, title) {
@@ -54,7 +41,12 @@ function appendAudio(url, title) {
     assetsDiv.appendChild(asset);
 }
 
-function onImageError() {
+function removeImageEventListeners(image) {
+    image.removeEventListener('load', onImageLoaded);
+    image.removeEventListener('error', onImageError);
+}
+
+function onImageError(event) {
     notFoundUrls.push(this.src);
 
     if ((this.src.indexOf('default_100_percent') === -1)  &&
@@ -79,8 +71,6 @@ function onImageLoaded(event) {
 
     removeImageEventListeners(this);
     this.parentNode.parentNode.style.visibility = '';
-
-    numberAssets++;
 }
 
 function appendImage(url, title) {
@@ -97,6 +87,7 @@ function appendImage(url, title) {
     var image = new Image();
     image.title = title;
     image.addEventListener('load', onImageLoaded);
+    image.addEventListener('abort', function(e) { console.log(e) });
     image.addEventListener('error', onImageError);
     image.src = url;
 
@@ -111,12 +102,6 @@ function appendImage(url, title) {
     assetsDiv.appendChild(asset);
 }
 
-function insertAsset(asset) {
-    assetsDiv.appendChild(asset);
-
-    numberAssets++;
-}
-
 function displayAssets() {
     var filter = searchInput.value;
     var regExp = new RegExp(filter, 'i');
@@ -125,37 +110,53 @@ function displayAssets() {
 
     window.location.hash = filter;
 
-    numberAssets = 0;
-    results = [];
+    var results = [];
+    var urls = [];
 
-    assetsDiv.innerText = '';
-
-    var i = 0;
     for (var i = 0; i < assets.length; i++) {
         var title = assets[i][1];
         var url = assets[i][0].replace(/\\/g, '/');
         if (!displayHiDPI)  url = url.replace('default_200_percent', 'default_100_percent');
-
         if (filter !== searchInput.value) break; 
-        if (results.indexOf(url) !== -1) continue;
+        if (urls.indexOf(url) !== -1) continue;
         if (notFoundUrls.indexOf(url) !== -1) continue;
         if (!filter || regExp.test(url.substr(baseUrl.length))) {
-            if (url.indexOf('.wav', url.length - '.wav'.length) !== -1) {
-                appendAudio(url, title);
-            } else {
-                appendImage(url, title);
-            }
-            results.push(url);
+            urls.push(url);
+            results.push({url: url, title: title});
         }
     }
+    var numberByPackets = 50;
+
+    (function displayGradually(index, offset) {
+        if (offset === numberByPackets) {
+            timeout = setTimeout(function() {
+                displayGradually(index, 0);
+            }, 1000);
+            return;
+        }
+        if (index >= results.length) {
+            return;
+        }
+        var url = results[index].url;
+        var title = results[index].title;
+        if (url.indexOf('.wav', url.length - '.wav'.length) !== -1) {
+            appendAudio(url, title);
+        } else {
+            appendImage(url, title);
+        }
+        displayGradually(++index, ++offset)
+    })(0,0);
 }
 
 var timeout;
 
 function triggerSearch() {
+    // Clean event listeners.
+    assetsDiv.innerText = '';
+    // And call safely window.stop().
     window.stop();
     clearTimeout(timeout);
-    timeout = setTimeout(displayAssets, 300);
+    displayAssets();
 }
 
 onload = function() {

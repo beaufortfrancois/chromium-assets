@@ -4,11 +4,6 @@ body {
     transition: background-color .1s;
     background: #ddd url(bg.png);
 }
-
-.darkroom {
-    background: #333;
-}
-
 .header {
     text-align: center;
     margin-bottom: 30px;
@@ -17,13 +12,6 @@ body {
     background-color: rgba(255 ,255, 255, .8);
     margin-left: auto;
     margin-right: auto;
-}
-.darkroom .header {
-    background-color: #222;
-}
-.darkroom .name,
-.darkroom .size {
-    background-color: rgba(255, 255, 255, .1);
 }
 .title {
     color: #555;
@@ -40,12 +28,6 @@ input[type=search] {
     border: 1px solid #ccc;
     font-size: 16px;
     box-shadow: inset 0px -1px 0px #eee;
-}
-.darkroom input[type=search] {
-    border: 1px solid #666;
-    background-color: #333;
-    box-shadow: inset 0px -1px 0px #999;
-    color: #ccc;
 }
 input[type=checkbox] {
     vertical-align: middle;
@@ -70,21 +52,13 @@ label {
     -webkit-box-orient: vertical;
     overflow: overlay;
 }
-
 .asset::-webkit-scrollbar {
     width: 4px;
     height: 4px;
 }
-
 .asset::-webkit-scrollbar-thumb {
     background-color: #999;
 }
-
-.darkroom .asset {
-    background: transparent;
-    box-shadow: none;
-}
-
 .asset img {
     max-width: 118px;
     max-height: 118px;
@@ -111,18 +85,24 @@ audio::-webkit-media-controls-volume-slider,
 audio::-webkit-media-controls-mute-button {
     display: none;
 }
-
-.footer {
-    clear: left;
-    height: 30px;
+.darkroom {
+    background: #333;
 }
-.loading {
-    width: 22px;
-    height: 22px;
-    position: fixed;
-    right: 14px;
-    bottom: 14px;
+.darkroom .header {
+    background-color: #222;
 }
-.hidden {
-    display: none;
+.darkroom .name,
+.darkroom .size {
+    background-color: rgba(255, 255, 255, .1);
+    box-shadow: none;
+}
+.darkroom input[type=search] {
+    border: 1px solid #666;
+    background-color: #333;
+    box-shadow: inset 0px -1px 0px #999;
+    color: #ccc;
+}
+.darkroom .asset {
+    background: transparent;
+    box-shadow: none;
 }
